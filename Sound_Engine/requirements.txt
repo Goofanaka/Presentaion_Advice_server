@@ -1,0 +1,10 @@
+requirements =[
+'Django',
+'django-cors-headers',
+'djongo',
+'dnspython',
+'moviepy',
+'boto3',
+'nltk',
+'konlpy',
+]
