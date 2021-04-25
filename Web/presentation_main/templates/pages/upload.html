@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<head>
+	{% load static %}
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://kit.fontawesome.com/e9edb88997.js" crossorigin="anonymous"></script>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+	<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+	<link rel="stylesheet" href="{% static 'wordcloud.css' %}" />
+	<link rel="stylesheet" href="{% static 'sub.css' %}" />
+	<link rel="shortcut icon" href="{% static 'images/gfnk.ico' %}">
+    <title>발표의 참견</title>
+</head>
+<body class="is-preload">
+
+		<!-- Wrapper-->
+			<div id="wrapper">
+
+				<!-- Header -->
+				<nav class="navbar navbar-default navbar-fixed-top">
+					<div class="brand">
+						발표의 참견
+					</div>
+				</nav>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<a href="#" class="icon solid fa-home"><span>Home</span></a>
+						<a href="#work" class="icon solid fa-folder"><span>Report</span></a>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Home -->
+							<article id="home" class="panel">
+								<header>
+									{% block content %}
+									<div>
+										<p class="work_p">
+											<i class="fas fa-angle-right">  발표 동영상 파일을 업로드해 주세요.</i>
+										</p>
+										<hr>
+											<form id="uploadForm" enctype="multipart/form-data" method="post" action="">
+												{% csrf_token %}
+												<input type="file" name="file" id="file">
+												<div id = "radio-div"><br>
+													<p class="work_p">
+														<i class="fas fa-angle-right">  당신의 성별을 선택해 주세요.</i>
+													</p>
+													<hr>
+														<div class="btn-group" data-toggle="buttons" id="radiogroup">
+															<input type="radio" name="gender" value="0">남
+															<input type="radio" name="gender" value="1" id = "radio-woman" >여
+														</div><br>
+													<div>
+														<a href="#work"> <button type="button" id="upload_btn">결과보기</button></a>
+													</div>
+												</div>
+											</form>
+									</div>
+									{% endblock %}
+								</header>
+
+							</article>
+
+						<!-- Work -->
+							<article id="work" class="panel">
+								<header>
+									<div>
+										<a href="http://127.0.0.1:8000/upload/"> <button type="button" style="float: right;">다시하기</button></a>
+									</div>
+									<h2  class="work_title">Report</h2>
+								</header><hr>
+								<section id="voice">
+									<h3  class="work_title">Voice</h3>
+										<p class="normal_p">
+										음성(voice)에 대한 분석 결과입니다.
+										</p>
+									<div class="row">
+										<div class="chart-div-2 col-4">
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_v">
+											<canvas id="voiceChartCanvas" width="200px" height="200px"></canvas>
+        								</div>
+										<div class="col-7 col-6-medium col-12-small">
+											<i id="v_hz" class="fas fa-angle-right poseinfo"> 목소리 평균 Hz :</i>
+											<p class="normal_p">
+												- 음성 주파수는 어느 정도가 좋다고 특정해서 말할 수 없습니다.<br>
+												- 다만 남성은 110~130헤르츠(hz), 여성은 210~240헤르츠(hz)의 영역 대의 목소리가 일반적으로 듣기 좋은 목소리라고 합니다.<br>
+												- 그래프 상에서 목소리가 해당 범위를 자주 벗어나거나 크게 벗어나는 구간이 있다면 유의해서 살펴보시기 바랍니다.<br>
+											</p>
+											<i class="fas fa-angle-right poseinfo"> 아나운서 목소리 높낮이 기준으로 목소리의 다양성에 대해 비교한 결과입니다. </i>
+											<p class="normal_p" id="vinfo" style="font-size:12pt; font-weight:900;"> </p>
+										</div>
+									</div>
+								</section>
+								<section id = speech>
+									<h3  class="work_title">Speech</h3>
+										<p class="normal_p">
+										말하기(speech)에 대한 분석 결과입니다.
+										</p>
+									<div class="row">
+										<div class="chart-div col-5">
+											<i class="fas fa-angle-right poseinfo"> TTR (Type Token Ratio)</i>
+											<div id="ttr">
+												<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_s">
+												<p class="proun_p">
+													어휘 다양도 :
+												</p>
+											</div>
+											<p class="normal_p">
+												- TTR 은 어휘를 얼마나 다양하게 썼는지에 대한 지표입니다.<br>
+												- 발표자가 사용한 언어의 Token Type 의 비율입니다.<br>
+												- 한국어 화자는 평균 20% ~ 40% 를 유지합니다.
+											</p>
+        								</div>
+										<div class="col-5 col-6-medium col-12-small">
+											<i class="fas fa-angle-right poseinfo"> 어미 분석</i>
+											<p class="normal_p">
+												- 발표 중 화법의 비중에 대한 지표입니다.
+											</p>
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_s2">
+											<canvas id="sttChartCanvas" width="200px" height="100px"></canvas>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 50px;">
+										<div class="chart-div col-5 col-6-medium col-12-small">
+											<i class="fas fa-angle-right poseinfo"> Word Cloud</i>
+											<div id="wc">
+												<div id="wordcloud" style="width: 100%; height: 300px;">
+													<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_s3">
+												</div>
+											</div>
+        								</div>
+										<div class="col-5 col-6-medium col-12-small">
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_s4">
+											<i class="fas fa-angle-right poseinfo"> Filler Words</i>
+											<p class="normal_p">
+												- [어.., 음, 그러니까..] 등의 말을 잇기 위해서 사용한 불필요한 추임새들의 빈도입니다.
+											</p>
+											<table class="ftable">
+												<tr>
+													<th>단어</th>
+													<th>사용 횟수</th>
+												</tr>
+												<tbody id="filler_table">
+												</tbody>
+											</table>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 50px;">
+										<div class="chart-div col-5">
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_s5">
+											<i class="fas fa-angle-right poseinfo"> 속도 분석</i>
+											<div id="sylab_chart" class="gauge_chart">
+											</div>
+											<p class="normal_p">
+												- 발표 시 어느 정도 속도로 말을 했는지에 대한 지표입니다.<br>
+												- 한국어 화자의 평균 말 속도는 분당 240 ~ 300 (어절) 입니다.
+											</p>
+        								</div>
+										<div class="col-5 col-6-medium col-12-small">
+											<i class="fas fa-angle-right poseinfo"> 발음 정확도</i>
+											<div id="pro">
+											</div>
+											<p class="normal_p">
+												- 사람의 귀로는 명확히 들리는 발음을 컴퓨터는 정확히 인식하지 못할 수도 있습니다.<br>
+												- 녹음 환경에 따라 발음 정확도의 차이가 존재할 수 있습니다. <br>
+												- 뉴스 영상의 아나운서의 발음 정확도는 80~90%를 보입니다.
+											</p>
+										</div>
+									</div>
+								</section>
+								<section id="pose">
+									<h3  class="work_title">Pose</h3>
+										<p class="normal_p">
+										발표 자세(pose)에 대한 분석 결과입니다.
+										</p>
+									<div class="row">
+										<div class="chart-div-2 col-4">
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" id="img_p" class="img_set">
+											<canvas id="poseChartCanvas" width="200px" height="200px"></canvas>
+        								</div>
+										<div class="col-7 col-6-medium col-12-small">
+											<i class="fas fa-angle-right poseinfo"> 전체적인 자세</i><br>
+											<p class="normal_p">
+												- 고개, 상체, 하체 하나라도 자세가 흐트러지면 자세가 흐트러진 것으로 판단하였습니다.<br>
+												- 영상 안에 상체나 하체 혹은 고개가 잡히지 않은 경우는 전부 None으로 처리하였습니다.<br>
+												- 흐트러진 자세 지속 시간(초)/전체 시간(초), 올바른 자세 지속 시간(초)/전체 시간(초), None(초)/전체 시간(초)의 비율입니다.<br>
+											</p>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-4">
+											<canvas id="shoulderChartCanvas" width="200px" height="100px"></canvas>
+        								</div>
+										<div class="col-4">
+											<canvas id="pelvisChartCanvas" width="200px" height="100px"></canvas>
+        								</div>
+										<div class="col-4">
+											<canvas id="eyeChartCanvas" width="200px" height="100px"></canvas>
+        								</div>
+									</div>
+								</section>
+								<section id="face">
+									<h3  class="work_title">Face</h3>
+										<p class="normal_p">
+										발표 얼굴(face) 변화에 대한 분석 결과입니다.
+										</p>
+									<div class="row">
+										<div class="chart-div-2 col-4 col-6-medium col-12-small">
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_f">
+											<canvas id="FaceChartCanvas" width="300px" height="300px"></canvas>
+        								</div>
+										<p class="normal_p col-7">
+											<br>
+											<i class="fas fa-angle-right poseinfo"> 표정의 변화</i>
+											<br>
+											- 각 부위별 특정 구간에서 값의 진폭이 크다면 그 시점에 표정이 크게 바뀐 것을 의미합니다.<br>
+											<img src="{% static 'images/facelegend.png' %}" >
+										</p>
+									</div>
+									<div class="row">
+										<div class="col-4">
+											<canvas id="Face2ChartCanvas" width="200px" height="200px"></canvas>
+        								</div>
+										<div class="col-4">
+											<canvas id="Face3ChartCanvas" width="200px" height="200px"></canvas>
+        								</div>
+										<div class="col-4">
+											<canvas id="Face4ChartCanvas" width="200px" height="200px"></canvas>
+        								</div>
+									</div>
+									<div class="row" style="margin-top : 1.25em;">
+										<div class="chart-div-2 col-4 col-6-medium col-12-small">
+											<img src="{% static 'images/loading.gif' %}" width="50" height="50" class="img_set" id="img_f2">
+											<canvas id="eyeblinkChartCanvas" width="300px" height="300px"></canvas>
+										</div>
+										<p class="normal_p col-7">
+											<br>
+											<i class="fas fa-angle-right poseinfo"> 분당 눈 깜박임 횟수</i><br>
+											- 특정 구간에서 높은 값이 나왔다면 그 시점에서 당황했거나 긴장한 것을 의미합니다.<br>
+											- 평균적인 사람들의 눈 깜박임 횟수는 1분에 25회 ~ 30회 입니다.
+										</p>
+									</div>
+								</section>
+
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<div id="footer">
+						<ul class="copyright">
+							<li>&copy; GOOFANAKA .</li>
+						</ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="{% static 'js/jquery.min.js' %}"></script>
+			<script src="{% static 'js/browser.min.js' %}"></script>
+			<script src="{% static 'js/breakpoints.min.js' %}"></script>
+			<script src="{% static 'js/util.js' %}"></script>
+			<script src="{% static 'js/main.js' %}"></script>
+			<script src="{% static 'js/upload.js' %}"></script>
+
+</body>
+</html>
