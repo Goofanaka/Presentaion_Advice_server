@@ -8,7 +8,7 @@ djongo 라이브러리를 사용하여 Mongodb atlas와 연결하여 사용하�
 
 ## Apps
 음성 분석 서버 안에 설계된 분석 어플리케이션은 총 두 개입니다.
-1. sttmorph : 형태소 분석, fillerwords 탐색, 어미 분석등 기본적인 자연어 분석 어플리케이션입니다.
+1. sttmorph : STT와 형태소 분석, fillerwords 탐색, 어미 분석등 기본적인 자연어 분석 어플리케이션입니다.
 2. voice : 음성 주파수 분석을 하는 어플리케이션입니다.
 
 ### sttmorph
