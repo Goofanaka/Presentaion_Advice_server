@@ -4,7 +4,7 @@
 corsheader와 whitelist만으로 rest처리 하였습니다. formdata로 들어오는 영상 파일을 작업한 후에 json으로 응답합니다.
 
 ## DataBase
-Mongodb atlas와 연결하여 사용하였습니다.
+djongo 라이브러리를 사용하여 Mongodb atlas와 연결하여 사용하였습니다. 
 
 ## Apps
 음성 분석 서버 안에 설계된 분석 어플리케이션은 총 두 개입니다.
