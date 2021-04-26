@@ -152,7 +152,8 @@ function voiceChartDraw(vdata) {
                         data: voice,
                         backgroundColor : '#a5dff9',
                         borderColor : '#a5dff9',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        radius : 0,
                     },
                     ]
                 };
@@ -283,7 +284,8 @@ function cheekChartDraw(fdata) {
                         label : '광대',
                         data: cheekbones_list,
                         backgroundColor : '#ec7079',
-                        borderColor : '#ec7079'
+                        borderColor : '#ec7079',
+                        radius : 0,
                     },
                     ]
                 };
@@ -335,7 +337,8 @@ function nasolabialChartDraw(fdata) {
                         label : '팔자',
                         data: nasolabial_folds,
                         backgroundColor : '#ffdfa2',
-                        borderColor : '#ffdfa2'
+                        borderColor : '#ffdfa2',
+                        radius : 0,
                     }
                     ]
                 };
@@ -386,7 +389,8 @@ function mouthChartDraw(fdata) {
                         label : '입',
                         data: mouth,
                         backgroundColor : '#a5dff9',
-                        borderColor : '#a5dff9'
+                        borderColor : '#a5dff9',
+                        radius : 0,
                     },
                     ]
                 };
@@ -437,7 +441,8 @@ function browChartDraw(fdata) {
                         label : '미간',
                         data: brow,
                         backgroundColor : '#bb9ecb',
-                        borderColor : '#bb9ecb'
+                        borderColor : '#bb9ecb',
+                        radius : 0,
                     },
                     ]
                 };
