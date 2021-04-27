@@ -5,6 +5,7 @@ from Presentation.settings import MEDIA_ROOT
 from urllib import request as rq
 from django.views.decorators.csrf import csrf_exempt
 from sttmorph import nlpcheck
+from hanspell import spell_checker
 import moviepy.editor as mp
 import boto3
 import time
@@ -20,7 +21,7 @@ def upload(request):
     if request.method=='POST':
         print(type(request))
         #저장시 특수문자 제거
-        pattern = re.compile('[-+=+,#/\?:^$@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》 ]')
+        pattern = re.compile('[가-힣=+,#/\?:^$@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》 ]')
         
         #포스트로 온 영상 파일 저장
         file = request.FILES['file']
@@ -28,36 +29,39 @@ def upload(request):
         file_name = re.sub(pattern, '', file_name)
         file_path = MEDIA_ROOT + file_name
         
+        wav_name = file_name.split('.')[0] + '.wav'
+        wav_path = MEDIA_ROOT + wav_name 
         #media 디렉토리에 저장
         with open(file_path, 'wb+') as destination:
             for chunk in file.chunks():
                 destination.write(chunk)
         
         #media 디렉토리에서 영상에서 음성 파일 추출
-        clip = mp.VideoFileClip(MEDIA_ROOT + file_name)
-        clip.audio.write_audiofile(MEDIA_ROOT +'/sample.wav')
+        clip = mp.VideoFileClip(file_path)
+        clip.audio.write_audiofile(MEDIA_ROOT +wav_name)
+        print('stt_morph:', wav_path)
         
         #음성 stt 시작
         bucket_name = 'goofanaka-stt-test'
         
         #access key
-        aws_access_key_id='YOUR ACCESS KEY'
-        aws_secret_access_key='YOUR ACCESS SECRET KEY'
+        aws_access_key_id='AKIA547LEYTTJA4XM6PT'
+        aws_secret_access_key='tcSc3vesmvithwLS2ecVTmczB458LOTVcdIM0fdV'
         s3 = boto3.client('s3', # 사용할 서비스 이름 by.기훈
                   aws_access_key_id=aws_access_key_id, # 액세스키 by.기훈
                   aws_secret_access_key=aws_secret_access_key, # 시크릿 키 by.기훈
                   region_name='ap-northeast-2' # 사용하는 서버 위치 by.기훈
                   )
-        
+        print('succefully uploaded')
         #s3 버켓에 업로드
-        s3.upload_file(file_path, # 버켓에 저장할 파일의 경로 입니다.
+        s3.upload_file(wav_path, # 버켓에 저장할 파일의 경로 입니다.
                bucket_name, # 저장 할 버켓의 이름입니다.
-               file_name) # 버켓에 저장될 파일 이름입니다.
+               wav_name) # 버켓에 저장될 파일 이름입니다.
                 
         #aws transcrbie stt
         s3_uri = f's3://{bucket_name}/'
 
-        file_format = file_name[file_name.find('.')+1:]
+#         file_format = file_name[wav_name.find('.')+1:]
 
         transcribe = boto3.client('transcribe',
                           aws_access_key_id=aws_access_key_id,
@@ -68,22 +72,23 @@ def upload(request):
         
         #중복시 job_name있을시 job_name에 1을 붙여서 넣어줌
         cnt = 0
-        job_name = file_name
+        job_name = wav_name
         while True:
             try:
-                job_uri = f"s3://{bucket_name}/{file_name}"
+                job_uri = f"s3://{bucket_name}/{wav_name}"
                 transcribe.start_transcription_job(
                     TranscriptionJobName=job_name, # 중복 노노, 이름은 자유롭게 설정 가능
                     Media={'MediaFileUri': job_uri}, # s3 버켓에 올라가 있는 음성 파일 경로(s3-uri)
-                    MediaFormat=file_format, # 파일의 포맷(m4a = mp4, mp3, wav, flac...)
+                    MediaFormat='wav', # 파일의 포맷(m4a = mp4, mp3, wav, flac...)
                     LanguageCode='ko-KR' # 언어 설정
                 )
                 
                 print('success')
                 break
-            except:
+            except Exception as e:
+                print(e)
                 cnt += 1
-                job_name = str(cnt) + file_name
+                job_name = str(cnt) + wav_name
 
             
         #STT 실행
@@ -134,10 +139,25 @@ def upload(request):
         #형태소 처리 from 주아
         text = json_result['results']['transcripts'][0]['transcript']
         
-        json_result['fillerwords'] = nlpcheck.filler_words_check(text)
-        json_result['ttr_check'] = nlpcheck.ttr_check(text)
-        json_result['speak_end'] = nlpcheck.word_end_check(text)
-        json_result['word_list'] = nlpcheck.get_nouns_list(text)
+        result_final = ''
+        while True:
+
+            if len(text) > 500:
+                file = spell_checker.check(text[:500])
+                result = file.checked
+                result_final += result
+                text = text[500:]
+
+            else:
+                file = spell_checker.check(text[:500])
+                result = file.checked
+                result_final += result
+                break
+        
+        json_result['fillerwords'] = nlpcheck.filler_words_check(result_final)
+        json_result['ttr_check'] = nlpcheck.ttr_check(result_final)
+        json_result['speak_end'] = nlpcheck.word_end_check(result_final)
+        json_result['word_list'] = nlpcheck.get_nouns_list(result_final)
         
         #불필요한 데이터 처리
         del json_result['results']
