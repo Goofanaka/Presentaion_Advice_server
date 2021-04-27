@@ -1,6 +1,6 @@
 from nltk.tokenize import word_tokenize
 from collections import Counter
-from konlpy.tag import Kkma
+from konlpy.tag import Kkma, Okt
 from konlpy.utils import pprint
 
 def filler_words_check(txt):
@@ -50,7 +50,7 @@ def ttr_check(txt):
     # print(ttr_token, ttr_type)
     # print('TTR은 : {} 입니다.'.format(ttr))
 
-    return ttr
+    return round(ttr, 2)
 
 def word_end_check(txt):
     
@@ -77,20 +77,20 @@ def word_end_check(txt):
     # 공식적인 화법 비율
     rate2 = word_b / (word_a+word_b) * 100
 
-    return {'formal_speak' : rate2, 'question_speak' : rate1}
+    return {'formal_speak' : round(rate2, 2), 'question_speak' : round(rate1, 2)}
 
 def get_nouns_list(txt):
     
-    kkma = Kkma()
+    okt = Okt()
     
-    nouns = kkma.nouns(txt)
+    nouns = okt.nouns(txt)
     
     nouns = Counter(nouns).most_common()
-    
+    print(nouns)
     word_list = []
     
     for i in range(len(nouns)):
         temp = {'text' : nouns[i][0], 'weight' : nouns[i][1]}
         word_list.append(temp)
-        
+    print(word_list)    
     return word_list
