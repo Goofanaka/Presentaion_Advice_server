@@ -45,8 +45,8 @@ def upload(request):
         bucket_name = 'goofanaka-stt-test'
         
         #access key
-        aws_access_key_id='AKIA547LEYTTJA4XM6PT'
-        aws_secret_access_key='tcSc3vesmvithwLS2ecVTmczB458LOTVcdIM0fdV'
+        aws_access_key_id='your access key'
+        aws_secret_access_key='your secret key'
         s3 = boto3.client('s3', # 사용할 서비스 이름 by.기훈
                   aws_access_key_id=aws_access_key_id, # 액세스키 by.기훈
                   aws_secret_access_key=aws_secret_access_key, # 시크릿 키 by.기훈
