@@ -7,4 +7,5 @@ requirements =[
 'boto3',
 'nltk',
 'konlpy',
+'py-hanspell'
 ]
