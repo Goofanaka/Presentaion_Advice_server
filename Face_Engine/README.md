@@ -1,5 +1,5 @@
 # 1. Face_Engine
-페이스 서버를 실행시키고, 모델로 분석을 진행하는 부분
+눈 깜박임 감지와 표정변화율을 측정하는 서버입니다.
 
 # 2. Execution Environment
 * Mediapipe 라이브러리사용 
